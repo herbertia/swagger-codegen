@@ -1,0 +1,40 @@
+require 'swagger_client';
+
+# Create the api instance
+api_instance = SwaggerClient::{{{classname}}}.new
+
+# Set up the host
+api_instance.api_client.config.host = 'YOUR_SLUG.leadalead.com'
+
+{{#hasAuthMethods}}{{#authMethods}}{{#isBasic}}
+# Configure HTTP basic authorization: {{{name}}}
+SwaggerClient.configure do |config|
+    config.username = 'YOUR_EMAIL_ADDRESS@EXAMPLE.COM'
+    config.password = 'YOUR PASSWORD'
+end
+{{/isBasic}}
+{{#isApiKey}}
+SwaggerClient.configure do |config|
+    # Set the prefix depending on using the API Key or a USER Token
+    config.api_key = 'YOUR_API_KEY'
+    config.api_key_prefix['api_key'] = 'API' || 'USER'
+end
+{{/isApiKey}}{{/authMethods}}{{/hasAuthMethods}}
+
+{{#hasParams}}
+{{#vendorExtensions.x-codegen-hasRequiredParams}}{{#allParams}}{{#required}}
+{{{paramName}}} = {{{example}}} # {{=< >=}}{<&dataType>}<={{ }}=> {{{description}}}
+{{/required}}{{/allParams}}{{/vendorExtensions.x-codegen-hasRequiredParams}}
+
+{{#hasOptionalParams}}
+opts = { {{#allParams}}{{^required}}
+    '{{{paramName}}}': {{{example}}}{{#vendorExtensions.x-codegen-hasMoreOptional}},{{/vendorExtensions.x-codegen-hasMoreOptional}} // {{=< >=}}{<&dataType>}<={{ }}=> {{{description}}}{{/required}}{{/allParams}}
+}
+{{/hasOptionalParams}}{{/hasParams}}
+
+begin
+    result = api_instance.{{{operationId}}}({{#allParams}}{{#required}}{{{paramName}}}{{/required}}{{/allParams}}, {{#hasOptionalParams}}opts{{/hasOptionalParams}})
+rescue SwaggerClient::ApiError => e
+    puts "Exception when calling api_instance.{{{operationId}}}: #{e}"
+end
+
